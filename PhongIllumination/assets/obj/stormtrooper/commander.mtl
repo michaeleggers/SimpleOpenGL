@@ -1,0 +1,56 @@
+#
+# commander.mtl
+#
+
+newmtl [nomaterial]
+illum 2
+Kd 0.800000 0.800000 0.800000
+Ka 0.200000 0.200000 0.200000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ns 0.000000
+
+newmtl torso_legs.tga
+illum 2
+Kd 0.800000 0.800000 0.800000
+Ka 0.200000 0.200000 0.200000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ns 0.000000
+map_Kd C:\Program Files\LucasArts\Star Wars JK II Jedi Outcast\GameData\base\assets0\models\players\stormtrooper\torso_legs.jpg
+
+newmtl helmet.tga
+illum 2
+Kd 0.800000 0.800000 0.800000
+Ka 0.200000 0.200000 0.200000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ns 0.000000
+map_Kd C:\Program Files\LucasArts\Star Wars JK II Jedi Outcast\GameData\base\assets0\models\players\stormtrooper\helmet.jpg
+
+newmtl shoulder.tga
+illum 2
+Kd 0.800000 0.800000 0.800000
+Ka 0.200000 0.200000 0.200000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ns 0.000000
+map_Kd C:\Program Files\LucasArts\Star Wars JK II Jedi Outcast\GameData\base\assets0\models\players\stormtrooper\shoulder.jpg
+
+newmtl armor.tga
+illum 2
+Kd 0.800000 0.800000 0.800000
+Ka 0.200000 0.200000 0.200000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ns 0.000000
+map_Kd C:\Program Files\LucasArts\Star Wars JK II Jedi Outcast\GameData\base\assets0\models\players\stormtrooper\armor.jpg
+
+newmtl caps.tga
+illum 2
+Kd 0.800000 0.800000 0.800000
+Ka 0.200000 0.200000 0.200000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ns 0.000000
+map_Kd C:\Program Files\LucasArts\Star Wars JK II Jedi Outcast\GameData\base\assets0\models\players\stormtrooper\caps.jpg
