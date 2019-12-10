@@ -53,6 +53,11 @@ struct Model
 	glm::mat4 model_matrix;
 };
 
+/* Globals */
+static glm::mat4 projection_matrix;
+static glm::mat4 view_matrix;
+uint32_t framebuffer_has_changed;
+
 /* Loads textfile from disk. */
 char * read_file(char const * file)
 {
@@ -100,6 +105,11 @@ char * read_file(char const * file)
 	return result;
 }
 
+void glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	framebuffer_has_changed = 1;
+}
+
 int main(void)
 {
 	GLFWwindow* window;
@@ -121,6 +131,9 @@ int main(void)
 
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
+
+	/* Callbacks for GLFW. GLFW calls us on certain events, eg. keyboard input, window resize, etc. */
+	glfwSetFramebufferSizeCallback(window, glfw_framebuffer_size_callback);
 
 	/* GLAD takes the responsibility of loading OpenGL extensions from us. 
 	   If we don't do this we are stuck with OpenGL 1.1 (No shaders, fixed function pipeline). */
@@ -153,8 +166,8 @@ int main(void)
 	model.position = glm::vec3(0, -30, 0);
 	
 	// Initialize View and Projection Matrices
-	glm::mat4 view_matrix = glm::lookAt(glm::vec3(0, 0, 100), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	glm::mat4 projection_matrix = glm::perspective(glm::radians(45.f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 200.f);
+	view_matrix = glm::lookAt(glm::vec3(0, 0, 100), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	projection_matrix = glm::perspective(glm::radians(45.f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 200.f);
 
 	// OpenGL global setup
 	glEnable(GL_CULL_FACE);
@@ -242,6 +255,20 @@ int main(void)
 		rotate = glm::rotate(rotate, glm::radians(rot), glm::vec3(0, 1, 0));
 		model.model_matrix = translate*rotate;
 		glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, (GLfloat*)&(model.model_matrix));
+
+		/* 
+		   Update the Viewport transformation (glViewport) and update the projection matrix if framebuffer
+		   (in this case the window size) has changed.
+		*/
+		if (framebuffer_has_changed) {
+			framebuffer_has_changed = 0;
+			int width, height;
+			glfwGetFramebufferSize(window, &width, &height);
+			float aspect = (float)width / (float)height;
+			glViewport(0, 0, width, height);
+			projection_matrix = glm::perspective(glm::radians(45.f), aspect, 0.1f, 200.f);
+			glUniformMatrix4fv(projection_mat_location, 1, GL_FALSE, (GLfloat*)&(projection_matrix));
+		}
 
 		/* Draw the model */
 		glBindVertexArray(vao);
