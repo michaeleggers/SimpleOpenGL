@@ -10,8 +10,6 @@
   TODOs:
    This program lacks time measurement, so the model animation will run slower/faster
    across different hardware-configurations.
-
-   Resizing the window won't update glViewport and recalculate the frustum given to glm::perspective.
   --------------------------------------------------------------------------------------------------------
   
   Windows only. In order to port it to Linux you just have to replace the read_file function.
