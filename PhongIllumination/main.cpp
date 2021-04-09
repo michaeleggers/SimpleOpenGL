@@ -251,7 +251,9 @@ int main(void)
 		translate = glm::translate(translate, model.position);
 		glm::mat4 rotate = glm::mat4(1.f);
 		rotate = glm::rotate(rotate, glm::radians(rot), glm::vec3(0, 1, 0));
-		model.model_matrix = translate*rotate;
+		glm::mat4 scale = glm::mat4(1.f);
+		scale = glm::scale(scale, glm::vec3(1.f, 1.f, 1.f));
+		model.model_matrix = translate*rotate*scale;
 		glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, (GLfloat*)&(model.model_matrix));
 
 		/* 
@@ -262,6 +264,8 @@ int main(void)
 			framebuffer_has_changed = 0;
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
+			width  = width  < 1 ? 1 : width;
+			height = height < 1 ? 1 : height;
 			float aspect = (float)width / (float)height;
 			glViewport(0, 0, width, height);
 			projection_matrix = glm::perspective(glm::radians(45.f), aspect, 0.1f, 200.f);
