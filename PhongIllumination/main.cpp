@@ -33,28 +33,22 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "model.h"
+
 #define WINDOW_WIDTH	1920
 #define WINDOW_HEIGHT   1080
 
-struct Vertex
+
+struct Light
 {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 uv;
+	glm::vec3 pos;
 };
 
-struct Model
-{
-	Vertex * vertices;
-	uint32_t vertex_count;
-	glm::vec3 position;
-	glm::mat4 model_matrix;
-};
 
 /* Globals */
-static glm::mat4 projection_matrix;
-static glm::mat4 view_matrix;
-uint32_t framebuffer_has_changed;
+static		glm::mat4 g_projection_matrix;
+static		glm::mat4 g_view_matrix;
+uint32_t	g_framebuffer_has_changed;
 
 /* Loads textfile from disk. */
 char * read_file(char const * file)
@@ -105,7 +99,7 @@ char * read_file(char const * file)
 
 void glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	framebuffer_has_changed = 1;
+	g_framebuffer_has_changed = 1;
 }
 
 int main(void)
@@ -138,34 +132,20 @@ int main(void)
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	// Init Model throug Assimp
-	Model model = {};
-	aiScene const * scene = aiImportFile("assets\\obj\\stormtrooper\\stormtrooper.obj", aiProcess_Triangulate);
-	uint32_t vertex_count = 0;
-	for (int i = 0; i < scene->mNumMeshes; ++i) {
-		vertex_count += scene->mMeshes[i]->mNumVertices;
-	}
-	model.vertex_count = vertex_count;
-	model.vertices = (Vertex*)malloc(vertex_count * sizeof(Vertex));
-	memset(model.vertices, 0, vertex_count*sizeof(Vertex));
-	Vertex * current_vertex = model.vertices;
-	for (int i = 0; i < scene->mNumMeshes; ++i) {
-		for (int j = 0; j < scene->mMeshes[i]->mNumVertices; ++j) {
-			aiVector3D p = scene->mMeshes[i]->mVertices[j];
-			aiVector3D n = scene->mMeshes[i]->mNormals[j];
-			//aiVector3D uv = scene->mMeshes[i]->mTextureCoords[j];
-			current_vertex->position = { p.x, p.y, p.z };
-			current_vertex->normal   = { n.x, n.y, n.z };
-			current_vertex++;
-		}
-	}
+	Model model = loadModel("assets/obj/stormtrooper/stormtrooper.obj");
+
 	/* The Stormtrooper's origin is set at its feet. So we move it down along the y-axis
 	   to center it in our screen. Alternatively, moving the camera up would have the same result.
 	*/
 	model.position = glm::vec3(0, -30, 0);
 	
+	/* Init the light */
+	Light light;
+	light.pos = glm::vec3(20, 300, 100);
+
 	// Initialize View and Projection Matrices
-	view_matrix = glm::lookAt(glm::vec3(0, 0, 100), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	projection_matrix = glm::perspective(glm::radians(45.f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 200.f);
+	g_view_matrix		= glm::lookAt(glm::vec3(0, 0, 100), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	g_projection_matrix = glm::perspective(glm::radians(45.f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 200.f);
 
 	// OpenGL global setup
 	glEnable(GL_CULL_FACE);
@@ -229,11 +209,13 @@ int main(void)
 	int model_mat_location = glGetUniformLocation(shader_program, "model");
 	int view_mat_location = glGetUniformLocation(shader_program, "view");
 	int projection_mat_location = glGetUniformLocation(shader_program, "projection");
+	int light_pos_location = glGetUniformLocation(shader_program, "u_light_pos");
+
 	/* Upload data into the shader. */
 	glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, (GLfloat*)&(model.model_matrix));
-	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, (GLfloat*)&(view_matrix));
-	glUniformMatrix4fv(projection_mat_location, 1, GL_FALSE, (GLfloat*)&(projection_matrix));
-
+	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, (GLfloat*)&(g_view_matrix));
+	glUniformMatrix4fv(projection_mat_location, 1, GL_FALSE, (GLfloat*)&(g_projection_matrix));
+	glUniform3f(light_pos_location, light.pos.x, light.pos.y, light.pos.z);
 
 	/* Render Loop */
 	while (!glfwWindowShouldClose(window))
@@ -260,16 +242,16 @@ int main(void)
 		   Update the Viewport transformation (glViewport) and update the projection matrix if framebuffer
 		   (in this case the window size) has changed.
 		*/
-		if (framebuffer_has_changed) {
-			framebuffer_has_changed = 0;
+		if (g_framebuffer_has_changed) {
+			g_framebuffer_has_changed = 0;
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
 			width  = width  < 1 ? 1 : width;
 			height = height < 1 ? 1 : height;
 			float aspect = (float)width / (float)height;
 			glViewport(0, 0, width, height);
-			projection_matrix = glm::perspective(glm::radians(45.f), aspect, 0.1f, 200.f);
-			glUniformMatrix4fv(projection_mat_location, 1, GL_FALSE, (GLfloat*)&(projection_matrix));
+			g_projection_matrix = glm::perspective(glm::radians(45.f), aspect, 0.1f, 200.f);
+			glUniformMatrix4fv(projection_mat_location, 1, GL_FALSE, (GLfloat*)&(g_projection_matrix));
 		}
 
 		/* Draw the model */

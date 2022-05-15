@@ -1,6 +1,2 @@
 ﻿  main.cpp
-c:\users\michael eggers\desktop\phongillumination\phongillumination\main.cpp(133): warning C4018: '<': signed/unsigned mismatch
-c:\users\michael eggers\desktop\phongillumination\phongillumination\main.cpp(140): warning C4018: '<': signed/unsigned mismatch
-c:\users\michael eggers\desktop\phongillumination\phongillumination\main.cpp(141): warning C4018: '<': signed/unsigned mismatch
-  PhongIllumination.vcxproj -> C:\Users\Michael Eggers\Desktop\PhongIllumination\x64\Debug\PhongIllumination.exe
-  PhongIllumination.vcxproj -> C:\Users\Michael Eggers\Desktop\PhongIllumination\x64\Debug\PhongIllumination.pdb (Partial PDB)
+  PhongIllumination.vcxproj -> C:\repos\SimpleOpenGL\x64\Debug\PhongIllumination.exe
